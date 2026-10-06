@@ -2,6 +2,7 @@
 #include <string.h>
 #include "operator.h"
 #include "fichier.h"
+#include "liste.h"
 
 void exercice_4_1(void) {
     int num1, num2;
@@ -43,7 +44,7 @@ void exercice_4_2(void) {
     printf("2. Écrire dans un fichier\n");
     printf("Votre choix : ");
     if (scanf("%d", &choix) != 1) return;
-    while (getchar() != '\n'); // Vider le buffer
+    while (getchar() != '\n');
 
     if (choix == 1) {
         printf("Entrez le nom du fichier à lire : ");
@@ -66,11 +67,38 @@ void exercice_4_2(void) {
     }
 }
 
+void exercice_4_7(void) {
+    struct liste_couleurs ma_liste;
+    init_liste(&ma_liste);
+
+    struct couleur couleurs[10] = {
+        {0xFF, 0x00, 0x00, 0xFF},
+        {0x00, 0xFF, 0x00, 0xFF},
+        {0x00, 0x00, 0xFF, 0xFF},
+        {0xFF, 0xFF, 0x00, 0xFF},
+        {0x00, 0xFF, 0xFF, 0xFF},
+        {0xFF, 0x00, 0xFF, 0xFF},
+        {0x80, 0x00, 0x00, 0xFF},
+        {0x00, 0x80, 0x00, 0xFF},
+        {0x00, 0x00, 0x80, 0xFF},
+        {0x80, 0x80, 0x80, 0xFF}
+    };
+
+    for (int i = 0; i < 10; i++) {
+        insertion(&couleurs[i], &ma_liste);
+    }
+
+    printf("Liste des couleurs :\n");
+    parcours(&ma_liste);
+    liberer_liste(&ma_liste);
+}
+
 int main(void) {
     int choix;
     printf("Choisissez l'exercice à exécuter :\n");
     printf("1. Exercice 4.1 (Calcul avec opérateurs)\n");
     printf("2. Exercice 4.2 (Gestion de fichiers)\n");
+    printf("3. Exercice 4.7 (Gestion d'une liste de couleurs)\n");
     printf("Votre choix : ");
     if (scanf("%d", &choix) != 1) return 1;
 
@@ -80,6 +108,9 @@ int main(void) {
             break;
         case 2:
             exercice_4_2();
+            break;
+        case 3:
+            exercice_4_7();
             break;
         default:
             printf("Choix invalide.\n");
