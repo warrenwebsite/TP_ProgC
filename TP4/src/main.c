@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include "operator.h"
+#include "fichier.h"
 
 void exercice_4_1(void) {
     int num1, num2;
@@ -31,16 +33,53 @@ void exercice_4_1(void) {
     printf("Résultat : %d\n", res);
 }
 
+void exercice_4_2(void) {
+    int choix;
+    char nom_fichier[100];
+    char message[256];
+
+    printf("Que souhaitez-vous faire ?\n");
+    printf("1. Lire un fichier\n");
+    printf("2. Écrire dans un fichier\n");
+    printf("Votre choix : ");
+    if (scanf("%d", &choix) != 1) return;
+    while (getchar() != '\n'); // Vider le buffer
+
+    if (choix == 1) {
+        printf("Entrez le nom du fichier à lire : ");
+        if (fgets(nom_fichier, sizeof(nom_fichier), stdin) != NULL) {
+            nom_fichier[strcspn(nom_fichier, "\n")] = '\0';
+            lire_fichier(nom_fichier);
+        }
+    } else if (choix == 2) {
+        printf("Entrez le nom du fichier dans lequel vous souhaitez écrire : ");
+        if (fgets(nom_fichier, sizeof(nom_fichier), stdin) != NULL) {
+            nom_fichier[strcspn(nom_fichier, "\n")] = '\0';
+            printf("Entrez le message à écrire : ");
+            if (fgets(message, sizeof(message), stdin) != NULL) {
+                message[strcspn(message, "\n")] = '\0';
+                ecrire_dans_fichier(nom_fichier, message);
+            }
+        }
+    } else {
+        printf("Choix invalide.\n");
+    }
+}
+
 int main(void) {
     int choix;
     printf("Choisissez l'exercice à exécuter :\n");
     printf("1. Exercice 4.1 (Calcul avec opérateurs)\n");
+    printf("2. Exercice 4.2 (Gestion de fichiers)\n");
     printf("Votre choix : ");
     if (scanf("%d", &choix) != 1) return 1;
 
     switch (choix) {
         case 1:
             exercice_4_1();
+            break;
+        case 2:
+            exercice_4_2();
             break;
         default:
             printf("Choix invalide.\n");
