@@ -5,6 +5,9 @@
 #include <sys/stat.h>
 #include "repertoire.h"
 
+#define MAX_CHEMIN 1024
+#define CAPACITE_FILE 2048
+
 void lire_dossier(const char *nom_repertoire) {
     DIR *dossier = opendir(nom_repertoire);
     if (dossier == NULL) {
@@ -29,10 +32,9 @@ void lire_dossier_recursif(const char *nom_repertoire) {
     }
 
     struct dirent *entree;
-    char chemin[1024];
+    char chemin[MAX_CHEMIN];
 
     while ((entree = readdir(dossier)) != NULL) {
-        // Ignorer . et .. pour éviter la récursion infinie
         if (strcmp(entree->d_name, ".") == 0 || strcmp(entree->d_name, "..") == 0) {
             continue;
         }
@@ -47,4 +49,42 @@ void lire_dossier_recursif(const char *nom_repertoire) {
     }
 
     closedir(dossier);
+}
+
+void lire_dossier_iteratif(const char *nom_repertoire) {
+    char file_dirs[CAPACITE_FILE][MAX_CHEMIN];
+    int debut = 0;
+    int fin = 0;
+
+    strncpy(file_dirs[fin++], nom_repertoire, MAX_CHEMIN - 1);
+
+    while (debut < fin) {
+        char rep_courant[MAX_CHEMIN];
+        strncpy(rep_courant, file_dirs[debut++], MAX_CHEMIN - 1);
+
+        DIR *dossier = opendir(rep_courant);
+        if (dossier == NULL) {
+            continue;
+        }
+
+        struct dirent *entree;
+        while ((entree = readdir(dossier)) != NULL) {
+            if (strcmp(entree->d_name, ".") == 0 || strcmp(entree->d_name, "..") == 0) {
+                continue;
+            }
+
+            char chemin[MAX_CHEMIN];
+            snprintf(chemin, sizeof(chemin), "%s/%s", rep_courant, entree->d_name);
+            printf("%s\n", chemin);
+
+            struct stat st;
+            if (stat(chemin, &st) == 0 && S_ISDIR(st.st_mode)) {
+                if (fin < CAPACITE_FILE) {
+                    strncpy(file_dirs[fin++], chemin, MAX_CHEMIN - 1);
+                }
+            }
+        }
+
+        closedir(dossier);
+    }
 }
